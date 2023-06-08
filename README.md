@@ -3,4 +3,4 @@
 |Guest|20 min|5|7|
 |Basic|20 min|20|50|
 |Advanced|Unlimited|Unlimited|Unlimited|
-|Company/Unlimited|Unlimited|Unlimited|
+|Company|Unlimited|Unlimited|Unlimited|
