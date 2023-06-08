@@ -1,5 +1,4 @@
-|Account type|Session duration|Allowed actions count||
-|||Per day|Per 20 days|
+|Account type|Session duration|Actions per day|Actions per 20 days|
 |--|--|--|--|
 |Guest|||
 |Basic|||
