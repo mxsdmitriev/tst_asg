@@ -5,8 +5,7 @@ info:
   description:
     
     A user can purchase a service plan or have no plan. A plan can be chosen via API but only if this plan is available by particular provider. If a user request a sunscription, their status changes to `signing` until the purchase is confirmed.
-
-  
+    
     The subscription status is introduced by the new `sub_status` attribute which can have one of the `signed`, `unsigned` or `absent` values. Plans can be created, modified and deleted.
 
 paths:
