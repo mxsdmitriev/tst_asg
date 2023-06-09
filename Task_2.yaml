@@ -4,8 +4,9 @@ info:
   title: Subscription management
   description:
     
-    A user can purchase a service plan or have no plan. A plan can be chosen via API but only if this plan is available by particular provider. If a user requests a subscription, their status changes to `signing` until the purchase is confirmed.
+    A user can purchase a service plan or have no plan. A plan can be chosen via API but only if this plan is available by particular provider. If a user request a sunscription, their status changes to `signing` until the purchase is confirmed.
     
+
     The subscription status is introduced by the new `sub_status` attribute which can have one of the `signed`, `unsigned` or `absent` values. Plans can be created, modified and deleted.
 
 paths:
@@ -15,6 +16,7 @@ paths:
         - User
       summary: Request the user status.
       description: Request the partner for the user status.
+
       parameters:
         - name: user_id
           in: query
@@ -24,18 +26,21 @@ paths:
           schema:
             type: string
             format: uuid
+            
         - name: from
           in: query
           description: Pagination start timestamp.
           required: false
           schema:
             type: integer
+
         - name: to
           in: query
           description: Pagination end timestamp.
           required: false
           schema:
             type: integer
+
         - name: limit
           in: query
           description: Limit to records returned, from 10 to 1000.
@@ -45,6 +50,7 @@ paths:
             minimum: 10
             maximum: 1000
             default: 1000
+
         - name: provider_id
           in: query
           description: Unique identifier of the partner a user bound to, four characters long.
@@ -53,6 +59,7 @@ paths:
             type: string
 
       responses:
+
         '200':
           description: successful operation
           content:
@@ -62,6 +69,49 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/UserResponse'
+
+        '400':
+          description: Error.
+    put:
+      tags:
+        - User
+      summary: Request a subscription plan.
+      description: Request a subscription plan.
+
+      parameters:
+        - name: user_id
+          in: query
+          description: Unique user identifier, seven characters long.
+          required: true
+          example: '3345011'
+          schema:
+            type: string
+            format: uuid
+
+        - name: plan
+          in: query
+          description: Requested plan name.
+          required: true
+          example: "basic"
+          schema:
+            type: string
+            enum:
+              - basic
+              - advanced
+              - company  
+
+      responses:
+
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+
         '400':
           description: Error.
 
@@ -70,7 +120,8 @@ paths:
       tags:
         - Partner
       summary: Request the partner state.
-      description: Request the partner operation state. Requires the [basic HTTP authorization](https://en.wikipedia.org/wiki/Basic_access_authentication).
+      description: Request the partner operation state.
+
       parameters:
         - name: provider_id
           in: query
@@ -79,6 +130,21 @@ paths:
           schema:
             type: string
             format: uuid
+
+        - name: from
+          in: query
+          description: Pagination start timestamp.
+          required: false
+          schema:
+            type: integer
+
+        - name: to
+          in: query
+          description: Pagination end timestamp.
+          required: false
+          schema:
+            type: integer
+
         - name: status
           description: Partner operation state.
           in: query
@@ -90,6 +156,7 @@ paths:
               - stopped
 
       responses:
+
         '200':
           description: successful operation
           content:
@@ -99,11 +166,148 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/PartnerResponse'
+
+        '400':
+          description: Error.
+
+    post:
+      tags:
+        - Partner
+      summary: Create a list of plans.
+      description: Create plans for the partner. Requires the [basic HTTP authorization](https://en.wikipedia.org/wiki/Basic_access_authentication).
+
+      parameters:
+        - name: provider_id
+          in: query
+          description: Unique partner identifier
+          required: true
+          example: 2234
+          schema:
+            type: string
+            format: uuid
+
+        - name: list
+          description: Partner plan types to be created. Can be any combination of `basic`, `advanced`, `company` divided by commas.
+          in: query
+          required: true
+          example: basic, advanced
+          schema:
+            type: string
+
+      responses:
+
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartnerPlansResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/PartnerPlansResponse'
+
+        '400':
+          description: Error.
+
+    put:
+      tags:
+        - Partner
+      summary: Modify a plan.
+      description: Modify a partner plan. Requires the [basic HTTP authorization](https://en.wikipedia.org/wiki/Basic_access_authentication).
+
+      parameters:
+        - name: provider_id
+          in: query
+          description: Unique partner identifier
+          required: true
+          example: 2234
+          schema:
+            type: string
+            format: uuid
+
+        - name: type
+          description: Partner plan type to be modified.
+          in: query
+          required: true
+          example: basic
+          schema:
+            type: string
+            enum:
+              - basic
+              - advanced
+              - company
+          
+        - name: permissions
+          description: Encoded permissions for the plan.
+          in: query
+          required: true
+          example: Zm9vYmFyLCBib29mYXIsIDQy
+          schema:
+            type: string
+            format: byte
+
+      responses:
+
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartnerModPlanResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/PartnerModPlanResponse'
+
+        '400':
+          description: Error.
+
+    delete:
+      tags:
+        - Partner
+      summary: Delete a plan.
+      description: Delete a partner's plan. Requires the [basic HTTP authorization](https://en.wikipedia.org/wiki/Basic_access_authentication).
+
+      parameters:
+        - name: provider_id
+          in: query
+          description: Unique partner identifier
+          required: true
+          example: 2234
+          schema:
+            type: string
+            format: uuid
+
+        - name: type
+          description: Partner plan type to be deleted.
+          in: query
+          required: true
+          example: basic
+          schema:
+            type: string
+            enum:
+              - basic
+              - advanced
+              - company
+              -
+      responses:
+
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartnerDelPlanResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/PartnerDelPlanResponse'
+
         '400':
           description: Error.
   
 components:
+
   schemas:
+
     UserResponse:
       type: object
       properties:
@@ -112,11 +316,13 @@ components:
           format: uuid
           description: Unique user identifier, seven characters.
           example: 3345601
+
         provider_id:
             type: string
             format: uuid
             description: Unique identifier of the partner a user bound to, four characters.
             example: 1243
+
         status:
           type: string
           description: User service state.
@@ -125,6 +331,7 @@ components:
             - inactive
             - idle
           example: 'active'
+
         type:
           type: string
           description: User type.
@@ -135,19 +342,22 @@ components:
             - advanced
             - admin
           example: 'basic'
+
         zone:
           type: string
           description: Region of residence. Two lowercase letters (Alpha-2 code, ISO 3166).
           example: 'us'
+
         sub_status:
           description: Subscription status.
-          required: false
           type: string
           enum:
             - signed
+            - signing
             - unsigned
             - absent
-          example: 'signed'
+          example: 'signing'
+
     PartnerResponse:
       type: object
       properties: 
@@ -155,6 +365,7 @@ components:
           description: Unique partner identifier, four characters long.
           type: string
           example: '2234'
+
         status:
           description: Partner operation state.
           type: string
@@ -162,3 +373,46 @@ components:
             - active
             - stopped
           example: 'active'
+    
+    PartnerPlansResponse:
+      type: object
+      properties: 
+        provider_id:
+          description: Unique partner identifier, four characters long.
+          type: string
+          example: '2234'
+
+        list:
+          description: Created plans list, divided by commas.
+          type: string
+          example: basic, advanced
+
+    PartnerDelPlanResponse:
+      type: object
+      properties: 
+        provider_id:
+          description: Unique partner identifier, four characters long.
+          type: string
+          example: '2234'
+
+        list:
+          description: Modified plans list, divided by commas.
+          type: string
+          example: basic
+
+    PartnerModPlanResponse:
+      type: object
+      properties: 
+        provider_id:
+          description: Unique partner identifier, four characters long.
+          type: string
+          example: '2234'
+
+        plan:
+          description: Modified plan type.
+          type: string
+          example: basic
+          enum:
+            - basic
+            - advanced
+            - company
