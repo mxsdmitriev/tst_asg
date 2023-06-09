@@ -1,0 +1,165 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Subscription management
+  description:
+    
+    A user can purchase a service plan or have no plan. A plan can be chosen via API but only if this plan is available by particular provider. If a user request a sunscription, their status changes to `signing` until the purchase is confirmed.
+
+  
+    The subscription status is introduced by the new `sub_status` attribute which can have one of the `signed`, `unsigned` or `absent` values. Plans can be created, modified and deleted.
+
+paths:
+  /api/external/user:
+    get:
+      tags:
+        - User
+      summary: Request the user status.
+      description: Request the partner for the user status.
+      parameters:
+        - name: user_id
+          in: query
+          description: Unique user identifier, seven characters long.
+          required: false
+          example: '3345011'
+          schema:
+            type: string
+            format: uuid
+        - name: from
+          in: query
+          description: Pagination start timestamp.
+          required: false
+          schema:
+            type: integer
+        - name: to
+          in: query
+          description: Pagination end timestamp.
+          required: false
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          description: Limit to records returned, from 10 to 1000.
+          required: false
+          schema:
+            type: integer
+            minimum: 10
+            maximum: 1000
+            default: 1000
+        - name: provider_id
+          in: query
+          description: Unique identifier of the partner a user bound to, four characters long.
+          required: false
+          schema:
+            type: string
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Error.
+
+  /api/partner:
+    get:
+      tags:
+        - Partner
+      summary: Request the partner state.
+      description: Request the partner operation state. Requires the [basic HTTP authorization](https://en.wikipedia.org/wiki/Basic_access_authentication).
+      parameters:
+        - name: provider_id
+          in: query
+          description: Unique partner identifier
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          description: Partner operation state.
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - active
+              - stopped
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartnerResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/PartnerResponse'
+        '400':
+          description: Error.
+  
+components:
+  schemas:
+    UserResponse:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          description: Unique user identifier, seven characters.
+          example: 3345601
+        provider_id:
+            type: string
+            format: uuid
+            description: Unique identifier of the partner a user bound to, four characters.
+            example: 1243
+        status:
+          type: string
+          description: User service state.
+          enum:
+            - active
+            - inactive
+            - idle
+          example: 'active'
+        type:
+          type: string
+          description: User type.
+          enum:
+            - basic
+            - guest
+            - company
+            - advanced
+            - admin
+          example: 'basic'
+        zone:
+          type: string
+          description: Region of residence. Two lowercase letters (Alpha-2 code, ISO 3166).
+          example: 'us'
+        sub_status:
+          description: Subscription status.
+          required: false
+          type: string
+          enum:
+            - signed
+            - unsigned
+            - absent
+          example: 'signed'
+    PartnerResponse:
+      type: object
+      properties: 
+        provider_id:
+          description: Unique partner identifier, four characters long.
+          type: string
+          example: '2234'
+        status:
+          description: Partner operation state.
+          type: string
+          enum:
+            - active
+            - stopped
+          example: 'active'
