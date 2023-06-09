@@ -1,6 +1,10 @@
-Plans provide product clients with a variety of service options defined within a preconfigured score.
+# Task 3
 
-Please note that your customer service flow and solutions may change after the incoming update. User records will be supplemented with additional properties according to 
-the latest version of our API reference. For example: users can be transferred to the 'signing' state before they confirm their purchase.
+Plans provide product clients with a pre-configured variety of service options.
 
-The capacity of plans per provider is limited by user’s types. Despite that, plans are just user attributes and the corresponding state.
+> **Note**
+> 
+> Please note that customer service flow may change after the incoming update. User records will have additional properties according to 
+the latest version of our API reference. For example: users can be transferred to the `signing` state before they confirm their purchase. Some of the guidelines and instructions may require an update.
+
+The capacity of plans per provider is limited by user account types available (except `guest` and `admin` types). 
